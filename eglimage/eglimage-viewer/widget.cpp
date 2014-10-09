@@ -17,25 +17,41 @@ Widget::Widget(uint32_t eglImage)
     : QGLWidget()
     , m_size(QApplication::desktop()->screenGeometry().size())
     , m_eglImage((EGLImageKHR)eglImage)
+    , m_texture(0)
 {
     setFixedSize(m_size);
     resolveGLMethods();
 
-    printf("                                                                          Using EGLImage %d\n", (uint32_t)m_eglImage);
+    glGenTextures(1, &m_texture);
+    if (!m_texture) {
+        printf("Viewer: error creating texture\n");
+        exit(0);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    imageTargetTexture2DOES(GL_TEXTURE_2D, m_eglImage);
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
     timer.setSingleShot(false);
     timer.start(1000);
 }
 
+Widget::~Widget()
+{
+    glDeleteTextures(1, &m_texture);
+}
+
 void Widget::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event)
 
-    printf("                                                                          Viewer redraw\n");
-    glClearColor(1, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-    swapBuffers();
+    QPainter painter(this);
+    QRectF rect(0, 0, m_size.width(), m_size.height());
+    context()->drawTexture(rect, m_texture);
 }
 
 void Widget::resolveGLMethods()
@@ -45,7 +61,7 @@ void Widget::resolveGLMethods()
     imageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
 
     if (!(createImageKHR && destroyImageKHR && imageTargetTexture2DOES)) {
-        printf("Error resolving gl methods\n");
+        printf("Viewer: error resolving gl methods\n");
         exit(0);
     }
 }

@@ -9,6 +9,7 @@ class Widget : public QGLWidget
     Q_OBJECT
 public:
     Widget(uint32_t eglImage);
+    ~Widget();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -19,4 +20,5 @@ private:
     QSize m_size;
     QTimer timer;
     EGLImageKHR m_eglImage;
+    GLuint m_texture;
 };

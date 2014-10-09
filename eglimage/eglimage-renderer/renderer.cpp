@@ -33,10 +33,8 @@ Renderer::Renderer()
     m_fbo = new QOpenGLFramebufferObject(m_size, QOpenGLFramebufferObject::CombinedDepthStencil, GL_TEXTURE_2D, GL_RGBA);
     m_eglImage = createImageKHR(eglGetCurrentDisplay(), eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR, (EGLClientBuffer)m_fbo->texture(), NULL);
     if (m_eglImage == EGL_NO_IMAGE_KHR) {
-        printf("Error creating EGLimage\n");
+        printf("Renderer: error creating EGLimage\n");
         exit(0);
-    } else {
-        printf("Created EGLImage %d\n", (uint32_t)m_eglImage);
     }
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(render()));
@@ -56,7 +54,6 @@ Renderer::~Renderer()
 void Renderer::render()
 {
     QString time = QTime::currentTime().toString();
-    printf("Renderer: %s\n", time.toUtf8().constData());
     m_context->makeCurrent(m_surface);
     m_fbo->bind();
     QOpenGLPaintDevice *pdev = new QOpenGLPaintDevice(m_size);
@@ -66,6 +63,7 @@ void Renderer::render()
     painter->setFont(QFont("Arial", 100));
     painter->drawText(400, 400, time);
     painter->end();
+    glFlush();
     delete painter;
     delete pdev;
 }
@@ -77,7 +75,7 @@ void Renderer::resolveGLMethods()
     imageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
 
     if (!(createImageKHR && destroyImageKHR && imageTargetTexture2DOES)) {
-        printf("Error resolving gl methods\n");
+        printf("Renderer: error resolving gl methods\n");
         exit(0);
     }
 }
