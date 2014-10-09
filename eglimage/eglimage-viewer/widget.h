@@ -8,7 +8,7 @@ class Widget : public QGLWidget
 {
     Q_OBJECT
 public:
-    Widget(EGLImageKHR eglImage);
+    Widget(uint32_t eglImage);
 
 protected:
     void paintEvent(QPaintEvent *event);

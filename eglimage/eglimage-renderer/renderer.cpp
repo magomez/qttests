@@ -36,7 +36,7 @@ Renderer::Renderer()
         printf("Error creating EGLimage\n");
         exit(0);
     } else {
-        printf("Created EGLImage %d\n", m_eglImage);
+        printf("Created EGLImage %d\n", (uint32_t)m_eglImage);
     }
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(render()));
@@ -80,4 +80,9 @@ void Renderer::resolveGLMethods()
         printf("Error resolving gl methods\n");
         exit(0);
     }
+}
+
+uint32_t Renderer::eglImage()
+{
+    return *((uint32_t*)&m_eglImage);
 }

@@ -13,13 +13,15 @@ static PFNEGLCREATEIMAGEKHRPROC createImageKHR = 0;
 static PFNEGLDESTROYIMAGEKHRPROC destroyImageKHR = 0;
 static PFNGLEGLIMAGETARGETTEXTURE2DOESPROC imageTargetTexture2DOES = 0;
 
-Widget::Widget(EGLImageKHR eglImage)
+Widget::Widget(uint32_t eglImage)
     : QGLWidget()
     , m_size(QApplication::desktop()->screenGeometry().size())
-    , m_eglImage(eglImage)
+    , m_eglImage((EGLImageKHR)eglImage)
 {
     setFixedSize(m_size);
     resolveGLMethods();
+
+    printf("                                                                          Using EGLImage %d\n", (uint32_t)m_eglImage);
 
     connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
     timer.setSingleShot(false);

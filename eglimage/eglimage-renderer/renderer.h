@@ -14,6 +14,7 @@ class Renderer : public QObject
 public:
     Renderer();
     ~Renderer();
+    uint32_t eglImage();
 
 private Q_SLOTS:
     void render();
