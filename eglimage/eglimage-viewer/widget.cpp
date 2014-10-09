@@ -2,7 +2,6 @@
 #include "widget.h"
 #include <QGLContext>
 #include <stdio.h>
-#include <private/qopenglpaintengine_p.h>
 #include <QSize>
 #include <QRectF>
 #include <QOpenGLFramebufferObject>

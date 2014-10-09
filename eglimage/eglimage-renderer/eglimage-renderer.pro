@@ -1,4 +1,4 @@
-QT += opengl widgets core-private gui-private
+QT += opengl widgets
 
 CONFIG += link_pkgconfig
 PKGCONFIG += egl glesv2
